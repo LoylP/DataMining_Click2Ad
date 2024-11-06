@@ -1,0 +1,9 @@
+streamlit
+streamlit-option-menu
+pandas
+matplotlib
+seaborn
+tqdm
+joblib
+xgboost
+scikit-learn
