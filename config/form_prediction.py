@@ -14,7 +14,7 @@ for column in ['Ad Topic Line', 'City', 'Country']:
     df_raw[column] = label_encoders[column].fit_transform(df_raw[column])
 
 def predict(input):
-    model_path_xgb = "models/best_xgb_model.joblib"
+    model_path_xgb = "config/best_xgb_model.joblib"
     best_model = joblib.load(model_path_xgb)
     predictions = best_model.predict(input)
     return predictions
