@@ -2,6 +2,7 @@
 
 A **Streamlit** app showcasing various data mining techniques, including data processing, outlier detection, correlation analysis, binning, smoothing, clustering, and prediction. The app serves as a demonstration of applying machine learning algorithms on real-world datasets and performing basic exploratory data analysis (EDA).
 
+![](/data/config/home.png)
 ---
 
 ## Table of Contents
@@ -79,11 +80,14 @@ streamlit run app.py
 - **Overview**: Displays the dataset summary, including the shape and the number of missing values for each column.
 - **File Upload**: Users can upload a CSV file for analysis, which is then displayed in a tabular format.
 
+![](/data/config/upload.png)
 ### 🛠 Data Processing
 
 - **Categorical and Numerical Columns**: Automatically detect and classify columns into categorical or numerical types.
 - **Missing Value Handling**: Display and provide options to fill or drop missing values.
 - **Encoding Categorical Data**: Convert categorical columns to numerical values using techniques like One-Hot Encoding.
+
+![](/data/config/preprocessing.png)
 
 ### 🚫 Outlier Detection
 
@@ -91,22 +95,42 @@ streamlit run app.py
 - **Outlier Removal**: Optionally remove outliers based on a set threshold, improving the quality of analysis.
 - **Distribution Visualization**: Visualize the distance distribution to help users set an appropriate threshold for outlier detection.
 
+![](/data/config/outlier.png)
+
 ### 🔗 Correlation Analysis
 
 - **Correlation Matrix**: Visualize correlations between numerical columns using a heatmap.
 - **Threshold Selection**: Choose a minimum correlation threshold to filter out weak correlations, focusing on the most significant relationships.
 
+![](/data/config/corr.png)
+
 ### 🌫 Binning/Smoothing
 
 - **Data Binning**: Group continuous data into bins (e.g., age ranges, income groups).
+
+![](/data/config/binning.png)
+
 - **Smoothing**: Apply smoothing techniques to reduce noise in binned data, improving the quality of the analysis.
+
+![](/data/config/smooth.png)
+
 - **Apriori Algorithm**: Perform association rule mining to find frequent itemsets and learn associations between features.
+
+![](/data/config/tapphobien.png)
 
 ### 🚀 Clustering
 
 - **K-Means Clustering**: Apply K-Means clustering on numerical features to group similar data points.
+
+![](/data/config/gomcum.png)
+
 - **Cluster Visualization**: Visualize clustering results in 2D or 3D plots for better interpretation.
+
+![](/data/config/clustering_visualize.png)
+
 - **Cluster Count Selection**: Select the number of clusters using the Elbow method or manual input.
+
+![](/data/config/clustering_visualize.png)
 
 ### 📈 EDA (Exploratory Data Analysis)
 
@@ -114,11 +138,19 @@ streamlit run app.py
 - **Visualizations**: Generate histograms, scatter plots, box plots, and pair plots for deeper insights into the data distribution and relationships.
 - **Feature Correlation**: Visualize and analyze the correlation between selected features to understand dependencies.
 
+![](/data/config/EDA.png)
+
 ### 🔎 Prediction
 
 - **Model Training**: Train machine learning models such as linear regression, decision trees, and random forests.
+
 - **Model Evaluation**: Display performance metrics like accuracy, precision, recall, F1 score, and confusion matrices.
+
+![](/data/config/model.png)
+
 - **Prediction Input**: Allow users to input new data and predict outcomes based on the trained model.
+
+![](/data/config/form.png)
 
 ## Usage
 #### Upload Data:
