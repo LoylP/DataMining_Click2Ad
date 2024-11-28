@@ -116,7 +116,7 @@ streamlit run app.py
 
 - **Apriori Algorithm**: Perform association rule mining to find frequent itemsets and learn associations between features.
 
-![](/data/config/tapphobien.png)
+![](/data/config/incorr.png)
 
 ### 🚀 Clustering
 
@@ -129,8 +129,6 @@ streamlit run app.py
 ![](/data/config/clustering_visualize.png)
 
 - **Cluster Count Selection**: Select the number of clusters using the Elbow method or manual input.
-
-![](/data/config/clustering_visualize.png)
 
 ### 📈 EDA (Exploratory Data Analysis)
 
