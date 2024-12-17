@@ -9,11 +9,14 @@ from utils.apriori import get_numerical_columns, display_column_statistics, pars
 from utils.smoothing import smoothing
 from utils.clustering import get_numerical_columns, plot_clusters_with_labels, kmeans_with_progress
 from utils.EDA import show_Histogram, show_Boxplot, show_Scatter, show_Heatmap
-from utils.models import select_data_for_prediction, select_columns, train_model, get_user_input, show_prediction_result
+from utils.models import select_data_for_prediction, select_columns, train_model, get_user_input, show_prediction_result, show_algorithm_formula
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn import tree
 
 def main():
     # Tiêu đề chính
@@ -40,7 +43,7 @@ def main():
     # Tạo menu tùy chọn với các nút bấm
     page = st.sidebar.radio(
         "Chọn một chức năng:",
-        ["🏠 Trang chủ", "🛠 Xử lý dữ liệu", "🚫 Xác định Outliers", "🔗 Độ Tương Quan", "🌫 Binning/Smoothing", "🚀 Gom Cụm", "📈 EDA", "🔎 Prediction"],
+        ["🏠 Trang chủ", "🛠 Xử lý dữ liệu", "🚫 Xác định Outliers", "🔗 Độ Tương Quan", "🌫 Binning/Smoothing", "🚀 Gom Cụm","🌳 Phân lớp", "📈 EDA", "🔎 Prediction"],
         label_visibility="visible"
     )
 
@@ -56,6 +59,8 @@ def main():
         show_binning_page()
     elif page == "🚀 Gom Cụm":
         show_clustering_page()
+    elif page == "🌳 Phân lớp":
+        show_classification_page()
     elif page == "📈 EDA":
         show_EDA_page()
     elif page == "🔎 Prediction":
@@ -209,7 +214,6 @@ def show_binning_page():
         
         if numerical_columns:
             column_to_bin = st.selectbox("Chọn cột số học để thực hiện Binning:", numerical_columns)
-
             display_column_statistics(df_temp, column_to_bin)
             # Nhập khoảng bin
             bin_ranges_input = st.text_input("Nhập các khoảng bin (ví dụ: [10, 20, 30, 40]):", "[10, 20, 30, 40]")
@@ -351,6 +355,68 @@ def show_clustering_page():
     elif start_clustering:
         st.warning("⚠️ Vui lòng chọn ít nhất 2 cột để thực hiện gom cụm!")
 
+def show_classification_page():
+    st.header("🌳 Phân lớp cây quyết định (Decision Tree)")
+    
+    # Kiểm tra dữ liệu
+    if st.session_state.df_normalize is not None:
+        data_options = ['df', 'df_smooth', 'df_normalize']
+    elif st.session_state.df_smooth is not None:
+        data_options = ['df', 'df_smooth']
+    elif st.session_state.df is not None:
+        data_options = ['df']
+    else:
+        st.warning("⚠️ Vui lòng tải và xử lý dữ liệu trước.")
+        return
+
+    col1, col2 = st.columns([2, 1])
+    
+    with col1:
+        # Chọn dữ liệu
+        df_to_choose = st.selectbox("📊 Chọn dữ liệu để phân lớp:", data_options)
+        
+        if df_to_choose == 'df_normalize':
+            data = st.session_state.df_normalize.copy()
+        elif df_to_choose == 'df_smooth':
+            data = st.session_state.df_smooth.copy()
+        else:
+            data = st.session_state.df.copy()
+
+        numerical_columns = get_numerical_columns(data)
+        selected_columns = st.multiselect(
+            "📈 Chọn các thuộc tính để phân lớp:",
+            numerical_columns,
+        )
+        
+        with col2:
+            chart_type = st.selectbox("🛠️ Chọn kiểu tính information gain:", ["Entropy", "Gini index"])
+
+            target_column = st.selectbox("🎯 Chọn cột mục tiêu (target):", data.columns)
+            feature_columns = selected_columns
+
+    X = data[selected_columns]
+    y = data[target_column]
+
+    # Tạo và huấn luyện mô hình
+    if st.button("🔍 Phân lớp với Decision Tree"):
+        criterion = "entropy" if chart_type == "Entropy" else "gini"
+        model = DecisionTreeClassifier(criterion=criterion, random_state=42)
+        model.fit(X, y)
+        
+        # Hiển thị kết quả
+        st.subheader("🌟 Kết quả phân lớp:")
+        
+        # Vẽ cây quyết định với Matplotlib
+        fig, ax = plt.subplots(figsize=(12, 6))
+        plot_tree(model, feature_names=feature_columns, class_names=[str(c) for c in y.unique()],
+                    filled=True, rounded=True, ax=ax)
+        st.pyplot(fig)
+
+        st.write(f"**Nút gốc của cây quyết định:** {model.tree_.value[0]}")
+        st.write(f"**Độ sâu của cây quyết định:** {model.get_depth()}")
+        st.write(f"**Số node của cây:** {model.get_n_leaves()}")
+
+
 def show_EDA_page():
     st.header("📈 Exploratory Data Analysis (EDA)")
 
@@ -420,17 +486,44 @@ def show_prediction_page():
     st.write(f"🎯 Cột X đã chọn: {X_columns}")
     st.write(f"🎯 Cột Y đã chọn: {y.name}")
 
-    selected_algorithm = st.selectbox("📚 Chọn thuật toán dự đoán", ["DecisionTree", "KNN", "SVM", "XGBoost"])
+    selected_algorithm = st.selectbox(
+        "📚 Chọn thuật toán dự đoán", 
+        ["DecisionTree(Entropy)", "DecisionTree(Gini index)", "RandomForest", 
+         "NaiveBayes", "NaiveBayes(Laplace Smoothing)", "KNN", "SVM", "XGBoost"]
+    )
     test_size = st.slider("Tỷ lệ dữ liệu kiểm tra:", 0.1, 0.5, 0.2)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
 
     if st.button("🔍 Huấn luyện và đánh giá mô hình"):
+        show_algorithm_formula(selected_algorithm)
         model = train_model(selected_algorithm, X_train, y_train)
         if model:
             # Đánh giá
             y_pred = model.predict(X_test)
             accuracy = accuracy_score(y_test, y_pred)
             st.success(f"🎯 Độ chính xác trên tập kiểm tra: {accuracy:.2%}")
+
+            # Hiển thị Confusion Matrix
+            st.subheader("📊 Confusion Matrix")
+            cm = confusion_matrix(y_test, y_pred)
+            fig, ax = plt.subplots(figsize=(8, 6))
+            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=model.classes_, yticklabels=model.classes_)
+            ax.set_xlabel('Dự đoán')
+            ax.set_ylabel('Thực tế')
+            st.pyplot(fig)
+
+            # Hiển thị Classification Report với định dạng đẹp
+            st.subheader("📈 Classification Report")
+            report = classification_report(y_test, y_pred, target_names=[str(c) for c in model.classes_], output_dict=True)
+            report_df = pd.DataFrame(report).transpose()
+            # Định dạng bảng đẹp
+            st.write("**Precision, Recall, F1-Score và Support**")
+            st.dataframe(report_df.style.format({
+                'precision': '{:.2f}', 
+                'recall': '{:.2f}', 
+                'f1-score': '{:.2f}', 
+                'support': '{:.0f}'
+            }).background_gradient(axis=None, cmap='Blues'))
 
             st.session_state.trained_model = model
 

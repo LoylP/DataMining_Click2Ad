@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
+
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 
@@ -41,10 +44,76 @@ def select_columns(data):
     
     return X, y, X_columns, Y_column
 
+def show_algorithm_formula(algorithm):
+    if algorithm == "NaiveBayes(Laplace Smoothing)":
+        st.markdown("""
+        **Áp dụng công thức Laplace smoothing:**
+        - P(Xk|Ci) = (count(Ci, Xk) + 1) / (count(Ci) + r)
+        - Trong đó:
+          - count(Ci, Xk) là số lần xuất hiện của đặc trưng Xk trong lớp Ci.
+          - count(Ci) là tổng số lần xuất hiện của tất cả các đặc trưng trong lớp Ci.
+          - r là số lượng các đặc trưng.
+        """)
+    elif algorithm == "NaiveBayes":
+        st.markdown("""
+        **Áp dụng công thức:**
+        - P(Y = y_i | X = x_j) = (P(X = x_j | Y = y_i) * P(Y = y_i)) / P(X = x_j)
+        - Đây là công thức chuẩn của Naive Bayes, trong đó các đặc trưng được giả định là độc lập với nhau.
+        """)
+    elif algorithm == "DecisionTree(Entropy)":
+        st.markdown("""
+        **Công thức Entropy trong Decision Tree:**
+        - Entropy(S) = - ∑ (p_i * log2(p_i))
+        - Trong đó:
+          - p_i là xác suất của lớp i trong tập S.
+        """)
+    elif algorithm == "DecisionTree(Gini index)":
+        st.markdown("""
+        **Công thức Gini Index:**
+        - Gini(S) = 1 - ∑ (p_i^2)
+        - Trong đó:
+          - p_i là xác suất của lớp i trong tập S.
+        """)
+    elif algorithm == "RandomForest":
+        st.markdown("""
+        **Công thức Random Forest:**
+        - Random Forest sử dụng nhiều cây quyết định (Decision Trees), mỗi cây được huấn luyện với một phần mẫu ngẫu nhiên của dữ liệu.
+        - Dự đoán được lấy từ việc kết hợp các dự đoán của các cây.
+        """)
+    elif algorithm == "KNN":
+        st.markdown("""
+        **Công thức K-Nearest Neighbors (KNN):**
+        - Dự đoán của KNN là lớp của K láng giềng gần nhất trong không gian đặc trưng.
+        - Class(x) = majority_class(nearest_neighbors(x))
+        """)
+    elif algorithm == "SVM":
+        st.markdown("""
+        **Công thức Support Vector Machine (SVM):**
+        - Dự đoán của SVM là hàm phân tách tối ưu nhất giữa các lớp trong không gian đặc trưng.
+        - Công thức: f(x) = w^T x + b
+        - Mục tiêu là tối đa hóa khoảng cách giữa các điểm dữ liệu và siêu phẳng phân cách.
+        """)
+    elif algorithm == "XGBoost":
+        st.markdown("""
+        **Công thức XGBoost:**
+        - XGBoost là mô hình học máy gradient boosting, nơi mỗi cây quyết định mới cố gắng sửa chữa sai sót của cây trước đó.
+        - Lớp cuối cùng được tính toán bằng cách cộng dồn kết quả của các cây quyết định: y_pred = ∑ f_t(x)
+        """)
+    else:
+        st.warning("Công thức không có sẵn cho thuật toán này.")
+        
 # Hàm huấn luyện mô hình
 def train_model(algorithm, X_train, y_train):
-    if algorithm == "DecisionTree":
-        model = DecisionTreeClassifier()
+    if algorithm == "DecisionTree(Entropy)":
+        model = DecisionTreeClassifier(criterion="entropy")
+    elif algorithm == "DecisionTree(Gini index)":
+        model = DecisionTreeClassifier(criterion="gini")
+    elif algorithm == "RandomForest":
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
+    elif algorithm == "NaiveBayes":
+        model = GaussianNB()
+    elif algorithm == "NaiveBayes(Laplace Smoothing)":
+        model = MultinomialNB(alpha=1.0)  # Laplace Smoothing
     elif algorithm == "KNN":
         model = KNeighborsClassifier()
     elif algorithm == "SVM":
@@ -52,7 +121,7 @@ def train_model(algorithm, X_train, y_train):
     elif algorithm == "XGBoost":
         model = XGBClassifier(use_label_encoder=False, eval_metric='logloss')
     else:
-        st.error("Thuật toán không hợp lệ!")
+        st.error("⚠️ Thuật toán không hợp lệ!")
         return None
     
     model.fit(X_train, y_train)
