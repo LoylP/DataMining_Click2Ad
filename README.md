@@ -40,12 +40,7 @@ This tool is ideal for learners, data scientists, and anyone interested in perfo
 ![Jupyter Notebook](https://img.shields.io/badge/Jupyter-%23FA0F00.svg?style=for-the-badge&logo=jupyter&logoColor=white) 
 
 ## Installation
-#### You can run with docker: 
-```bash
-docker build -t streamlit-app .
-docker run -p 8080:8080 streamlit-app
-```
-#### Or follow these steps:
+#### Follow these steps:
 1. Clone the repository:
 ```bash
 # 1. Clone the repository:
@@ -53,7 +48,12 @@ git clone https://github.com/LoylP/Data_Mining_App.git
 # 2. Navigate to the project directory:
 cd Data_Mining_App
 ```
-2. (Optional) Create and activate a virtual environment:
+#### You can run with docker: 
+```bash
+docker build -t streamlit-app .
+docker run -p 8080:8080 streamlit-app
+```
+#### (Optional) Or create and activate a virtual environment:
  - For Ubuntu/macOS:
 ```bash
 python3 -m venv venv
